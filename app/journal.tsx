@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import { styles } from "../../constants/styles";
+import { styles } from "../constants/styles";
 import { useRouter } from "expo-router";
 
 export default function JournalScreen() {

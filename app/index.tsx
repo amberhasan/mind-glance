@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
-import CustomButton from "../../components/CustomButton";
-import { styles } from "../../constants/styles";
+import CustomButton from "../components/CustomButton";
+import { styles } from "../constants/styles";
 
 export default function HomeScreen() {
   return (

@@ -1,8 +1,8 @@
 import { View, Text, Pressable } from "react-native";
-import { styles } from "../../constants/styles";
+import { styles } from "../constants/styles";
 import { useRouter } from "expo-router";
 
-export default function OptionsScreen() {
+export default function GamesScreen() {
   const router = useRouter();
 
   return (
@@ -11,7 +11,7 @@ export default function OptionsScreen() {
         <Text style={{ color: "blue" }}>← Back</Text>
       </Pressable>
 
-      <Text style={styles.title}>Options ⚙️</Text>
+      <Text style={styles.title}>Games 🎮</Text>
     </View>
   );
 }

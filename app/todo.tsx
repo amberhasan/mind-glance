@@ -4,17 +4,14 @@ import {
   Text,
   TextInput,
   Pressable,
-  FlatList,
   StyleSheet,
-  Alert,
+  ScrollView,
   Modal,
   Animated,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { Swipeable } from "react-native-gesture-handler";
 import { Picker } from "@react-native-picker/picker";
 
-// Define the Task type
 type Task = {
   id: string;
   text: string;
@@ -37,9 +34,15 @@ export default function TodoList() {
 
   const addTask = () => {
     if (task.trim() === "") return;
-    setTasks([
-      ...tasks,
-      { id: Date.now().toString(), text: task, done: false, dueDate, priority },
+    setTasks((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        text: task,
+        done: false,
+        dueDate,
+        priority,
+      },
     ]);
     setTask("");
     setDueDate("");
@@ -54,15 +57,8 @@ export default function TodoList() {
     );
   };
 
-  const confirmDeleteTask = (id: string) => {
-    Alert.alert("Delete Task", "Are you sure you want to delete this task?", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Delete", style: "destructive", onPress: () => deleteTask(id) },
-    ]);
-  };
-
   const deleteTask = (id: string) => {
-    setTasks((prev) => prev.filter((item) => item.id !== id));
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
   };
 
   const startEditTask = (task: Task) => {
@@ -82,7 +78,12 @@ export default function TodoList() {
     setTasks((prev) =>
       prev.map((item) =>
         item.id === editingTaskId
-          ? { ...item, text: editText, dueDate: editDueDate, priority: editPriority }
+          ? {
+              ...item,
+              text: editText,
+              dueDate: editDueDate,
+              priority: editPriority,
+            }
           : item
       )
     );
@@ -104,6 +105,46 @@ export default function TodoList() {
 
   const sortedTasks = [...tasks].sort((a, b) => Number(a.done) - Number(b.done));
 
+  const renderTasks = (done: boolean) =>
+    sortedTasks
+      .filter((item) => item.done === done)
+      .map((item) => (
+        <View
+          key={item.id}
+          style={[styles.taskItem, item.done && styles.taskDone]}
+        >
+          <Pressable
+            onPress={() => toggleTask(item.id)}
+            onLongPress={() => startEditTask(item)}
+            style={{ flex: 1 }}
+          >
+            <Text
+              style={{
+                color: item.done
+                  ? "gray"
+                  : item.priority === "High"
+                  ? "#d32f2f"
+                  : item.priority === "Medium"
+                  ? "#fbc02d"
+                  : "#388e3c",
+                textDecorationLine: item.done ? "line-through" : "none",
+                fontFamily: "System",
+              }}
+            >
+              {item.priority === "High"
+                ? "🔥 "
+                : item.priority === "Medium"
+                ? "⚠️ "
+                : "✅ "}
+              {item.text} {item.dueDate ? `- Due: ${item.dueDate}` : ""}
+            </Text>
+          </Pressable>
+          <Pressable onPress={() => deleteTask(item.id)} style={styles.deleteButton}>
+            <Text style={styles.deleteText}>🗑</Text>
+          </Pressable>
+        </View>
+      ));
+
   return (
     <View style={styles.container}>
       <Pressable onPress={() => router.back()} style={{ marginBottom: 20 }}>
@@ -112,6 +153,7 @@ export default function TodoList() {
 
       <Text style={styles.header}>📝 To-Do Checklist</Text>
 
+      {/* Input Form */}
       <View style={styles.inputContainer}>
         <TextInput
           value={task}
@@ -125,7 +167,7 @@ export default function TodoList() {
           placeholder="Due date (e.g. 2024-05-01)"
           style={styles.input}
         />
-        <Text style={{ marginTop: 10, marginBottom: 5 }}>Priority</Text>
+        <Text style={styles.label}>Priority</Text>
         <Picker
           selectedValue={priority}
           onValueChange={(itemValue) => setPriority(itemValue)}
@@ -135,48 +177,29 @@ export default function TodoList() {
           <Picker.Item label="Medium Priority" value="Medium" />
           <Picker.Item label="High Priority" value="High" />
         </Picker>
-        <View style={{ marginTop: 10 }}>
-          <Pressable onPress={addTask} style={styles.addButton}>
-            <Text style={{ color: "white", fontWeight: "bold" }}>Add</Text>
-          </Pressable>
-        </View>
+        <Pressable onPress={addTask} style={styles.addButton}>
+          <Text style={styles.addButtonText}>Add</Text>
+        </Pressable>
       </View>
 
-      <FlatList
-        data={sortedTasks}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ flexGrow: 1 }}
-        renderItem={({ item }) => (
-          <Swipeable
-            renderRightActions={() => (
-              <Pressable
-                onPress={() => confirmDeleteTask(item.id)}
-                style={{ backgroundColor: "red", justifyContent: "center", padding: 20 }}
-              >
-                <Text style={{ color: "white" }}>Delete</Text>
-              </Pressable>
-            )}
-          >
-            <View style={[styles.taskItem, item.done && styles.taskDone]}>
-              <Pressable
-                onPress={() => toggleTask(item.id)}
-                onLongPress={() => startEditTask(item)}
-                style={{ flex: 1 }}
-              >
-                <Text
-                  style={{
-                    color: item.done ? "gray" : "black",
-                    textDecorationLine: item.done ? "line-through" : "none",
-                  }}
-                >
-                  {item.text} ({item.priority}) {item.dueDate ? `- Due: ${item.dueDate}` : ""}
-                </Text>
-              </Pressable>
-            </View>
-          </Swipeable>
+      {/* Task Groups */}
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        {tasks.some((t) => !t.done) && (
+          <Text style={styles.groupHeader}>📌 Incomplete Tasks</Text>
         )}
-        ListEmptyComponent={<Text style={{ textAlign: "center", color: "gray" }}>No tasks yet</Text>}
-      />
+        {renderTasks(false)}
+
+        {tasks.some((t) => t.done) && (
+          <Text style={styles.groupHeader}>✅ Completed Tasks</Text>
+        )}
+        {renderTasks(true)}
+
+        {tasks.length === 0 && (
+          <Text style={{ textAlign: "center", color: "gray" }}>
+            No tasks yet
+          </Text>
+        )}
+      </ScrollView>
 
       {/* Edit Modal */}
       {editingTaskId && (
@@ -196,7 +219,7 @@ export default function TodoList() {
                 style={styles.input}
                 placeholder="Edit due date"
               />
-              <Text style={{ marginTop: 10, marginBottom: 5 }}>Edit Priority</Text>
+              <Text style={styles.label}>Edit Priority</Text>
               <Picker
                 selectedValue={editPriority}
                 onValueChange={(itemValue) => setEditPriority(itemValue)}
@@ -206,7 +229,7 @@ export default function TodoList() {
                 <Picker.Item label="Medium Priority" value="Medium" />
                 <Picker.Item label="High Priority" value="High" />
               </Picker>
-              <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+              <View style={styles.modalButtons}>
                 <Pressable onPress={closeModal}>
                   <Text style={{ color: "gray" }}>Cancel</Text>
                 </Pressable>
@@ -234,6 +257,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+    fontFamily: "System",
+  },
+  groupHeader: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 20,
+    marginBottom: 10,
+    color: "#333",
   },
   inputContainer: {
     marginBottom: 20,
@@ -245,6 +276,11 @@ const styles = StyleSheet.create({
     padding: 12,
     backgroundColor: "white",
     marginBottom: 10,
+    fontFamily: "System",
+  },
+  label: {
+    fontWeight: "bold",
+    marginBottom: 4,
   },
   addButton: {
     backgroundColor: "#4CAF50",
@@ -253,6 +289,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
+  },
+  addButtonText: {
+    color: "white",
+    fontWeight: "bold",
   },
   taskItem: {
     flexDirection: "row",
@@ -267,6 +307,17 @@ const styles = StyleSheet.create({
   taskDone: {
     backgroundColor: "#e0e0e0",
   },
+  deleteButton: {
+    backgroundColor: "#f44336",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    marginLeft: 10,
+  },
+  deleteText: {
+    color: "white",
+    fontWeight: "bold",
+  },
   modalContainer: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.3)",
@@ -278,5 +329,10 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 20,
     borderRadius: 10,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
   },
 });

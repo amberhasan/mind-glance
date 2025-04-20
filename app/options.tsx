@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { useMusic } from "../components/MusicContext"; // ✅ ADDED
 
 const frameOptions = [
   {
@@ -64,6 +65,7 @@ const musicTracks = [
 
 export default function OptionsScreen() {
   const router = useRouter();
+  const { playNewTrack } = useMusic(); // ✅ ADDED
   const [purchasedFrames, setPurchasedFrames] = useState<string[]>([]);
   const [ownedFrames, setOwnedFrames] = useState<string[]>([]);
   const [selectedFrame, setSelectedFrame] = useState<string | null>(null);
@@ -100,7 +102,7 @@ export default function OptionsScreen() {
 
   const handleSelectMusic = async (id: string) => {
     setSelectedMusic(id);
-    await AsyncStorage.setItem("selectedMusic", id);
+    await playNewTrack(id); // ✅ This replaces AsyncStorage directly
     Alert.alert("Updated", "Background music has been changed!");
   };
 
@@ -173,10 +175,7 @@ export default function OptionsScreen() {
           ) : selectedFrame === frame.id ? (
             <Text style={styles.status}>✅ Equipped</Text>
           ) : (
-            <Pressable
-              onPress={() => handleSelectFrame(frame.id)}
-              style={styles.buyButton}
-            >
+            <Pressable onPress={() => handleSelectFrame(frame.id)} style={styles.buyButton}>
               <Text style={styles.buyText}>Equip</Text>
             </Pressable>
           )}
@@ -203,10 +202,7 @@ export default function OptionsScreen() {
             {selectedMusic === track.id ? (
               <Text style={styles.status}>✅ Equipped</Text>
             ) : (
-              <Pressable
-                onPress={() => handleSelectMusic(track.id)}
-                style={styles.buyButton}
-              >
+              <Pressable onPress={() => handleSelectMusic(track.id)} style={styles.buyButton}>
                 <Text style={styles.buyText}>Equip</Text>
               </Pressable>
             )}
@@ -228,9 +224,7 @@ export default function OptionsScreen() {
           </Pressable>
 
           <Pressable onPress={clearFrames} style={styles.devButton}>
-            <Text style={styles.devButtonText}>
-              ❌ Remove All Purchased Frames
-            </Text>
+            <Text style={styles.devButtonText}>❌ Remove All Purchased Frames</Text>
           </Pressable>
 
           <View style={styles.inputGroup}>

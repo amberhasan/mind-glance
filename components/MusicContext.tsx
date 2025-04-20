@@ -6,6 +6,8 @@ type MusicContextType = {
   isPlaying: boolean;
   toggle: () => void;
   currentTrack: string;
+  isLoaded: boolean;
+  playNewTrack: (trackId: string) => void;
 };
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -14,6 +16,13 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState("calm");
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const trackMap: { [key: string]: string } = {
+    calm: "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM120.mp3?raw=true",
+    retro: "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM98.mp3?raw=true",
+    nature: "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM72.mp3?raw=true",
+  };
 
   useEffect(() => {
     const loadTrack = async () => {
@@ -23,32 +32,52 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       await playMusic(track);
     };
     loadTrack();
+
     return () => {
-      if (sound) sound.unloadAsync();
+      if (sound) {
+        sound.unloadAsync();
+      }
     };
   }, []);
 
-  const trackMap: { [key: string]: string } = {
-    calm: "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM120.mp3?raw=true",
-    retro: "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM98.mp3?raw=true",
-    nature: "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM72.mp3?raw=true",
-  };
-
   const playMusic = async (trackId: string) => {
+    setIsLoaded(false);
+
     if (sound) {
       await sound.stopAsync();
       await sound.unloadAsync();
     }
 
-    const { sound: newSound } = await Audio.Sound.createAsync({ uri: trackMap[trackId] });
-    setSound(newSound);
-    setIsPlaying(true);
-    await newSound.setIsLoopingAsync(true);
-    await newSound.playAsync();
+    try {
+      const { sound: newSound } = await Audio.Sound.createAsync({ uri: trackMap[trackId] });
+      setSound(newSound);
+      setIsPlaying(true);
+      await newSound.setIsLoopingAsync(true);
+      await newSound.playAsync();
+      setIsLoaded(true);
+    } catch (error) {
+      console.error("Failed to load and play music:", error);
+    }
+  };
+
+  const playNewTrack = async (trackId: string) => {
+    setCurrentTrack(trackId);
+    await AsyncStorage.setItem("selectedTrack", trackId);
+    await playMusic(trackId);
   };
 
   const toggle = async () => {
-    if (!sound) return;
+    if (!sound) {
+      console.warn("Sound is not yet initialized.");
+      return;
+    }
+
+    const status = await sound.getStatusAsync();
+    if (!status.isLoaded) {
+      console.error("Sound object exists but is not fully loaded.");
+      return;
+    }
+
     if (isPlaying) {
       await sound.pauseAsync();
       setIsPlaying(false);
@@ -59,7 +88,9 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   return (
-    <MusicContext.Provider value={{ isPlaying, toggle, currentTrack }}>
+    <MusicContext.Provider
+      value={{ isPlaying, toggle, currentTrack, isLoaded, playNewTrack }}
+    >
       {children}
     </MusicContext.Provider>
   );

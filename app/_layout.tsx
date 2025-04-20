@@ -4,7 +4,12 @@ import { Stack } from "expo-router";
 export default function Layout() {
   return (
     <MusicProvider>
-      <Stack />
+      <Stack
+        screenOptions={{
+          headerTitle: "", // <-- No text
+          headerTransparent: false, // (optional) keep background solid
+        }}
+      />
     </MusicProvider>
   );
 }

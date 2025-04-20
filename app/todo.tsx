@@ -28,7 +28,9 @@ export default function TodoList() {
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [editDueDate, setEditDueDate] = useState("");
-  const [editPriority, setEditPriority] = useState<"Low" | "Medium" | "High">("Medium");
+  const [editPriority, setEditPriority] = useState<"Low" | "Medium" | "High">(
+    "Medium"
+  );
   const modalOpacity = useState(new Animated.Value(0))[0];
   const router = useRouter();
 
@@ -103,7 +105,9 @@ export default function TodoList() {
     });
   };
 
-  const sortedTasks = [...tasks].sort((a, b) => Number(a.done) - Number(b.done));
+  const sortedTasks = [...tasks].sort(
+    (a, b) => Number(a.done) - Number(b.done)
+  );
 
   const renderTasks = (done: boolean) =>
     sortedTasks
@@ -139,7 +143,10 @@ export default function TodoList() {
               {item.text} {item.dueDate ? `- Due: ${item.dueDate}` : ""}
             </Text>
           </Pressable>
-          <Pressable onPress={() => deleteTask(item.id)} style={styles.deleteButton}>
+          <Pressable
+            onPress={() => deleteTask(item.id)}
+            style={styles.deleteButton}
+          >
             <Text style={styles.deleteText}>🗑</Text>
           </Pressable>
         </View>
@@ -147,10 +154,6 @@ export default function TodoList() {
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => router.replace("/home")} style={{ marginBottom: 20 }}>
-        <Text style={{ color: "blue" }}>← Back</Text>
-      </Pressable>
-
       <Text style={styles.header}>📝 To-Do Checklist</Text>
 
       <View style={styles.inputContainer}>
@@ -201,7 +204,9 @@ export default function TodoList() {
 
       {editingTaskId && (
         <Modal transparent animationType="none">
-          <Animated.View style={[styles.modalContainer, { opacity: modalOpacity }]}>
+          <Animated.View
+            style={[styles.modalContainer, { opacity: modalOpacity }]}
+          >
             <View style={styles.modalContent}>
               <Text style={{ marginBottom: 10 }}>Edit Task</Text>
               <TextInput

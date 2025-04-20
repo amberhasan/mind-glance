@@ -17,22 +17,30 @@ const frameOptions = [
   {
     id: "frame1",
     name: "Glacier Frame",
-    image: { uri: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames3.png?raw=true" },
+    image: {
+      uri: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames3.png?raw=true",
+    },
   },
   {
     id: "frame2",
     name: "Abstract Flower Frame",
-    image: { uri: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames4.png?raw=true" },
+    image: {
+      uri: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames4.png?raw=true",
+    },
   },
   {
     id: "frame3",
     name: "HackAI Frame",
-    image: { uri: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames6.png?raw=true" },
+    image: {
+      uri: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames6.png?raw=true",
+    },
   },
   {
     id: "frame4",
     name: "NRVE Frame",
-    image: { uri: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames7.png?raw=true" },
+    image: {
+      uri: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames7.png?raw=true",
+    },
   },
 ];
 
@@ -111,10 +119,6 @@ export default function OptionsScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Pressable onPress={() => router.back()} style={{ marginBottom: 20 }}>
-        <Text style={{ color: "blue" }}>← Back</Text>
-      </Pressable>
-
       <Text style={styles.title}>Options ⚙️</Text>
       <Text style={styles.subtitle}>Choose your profile frame:</Text>
 
@@ -163,7 +167,9 @@ export default function OptionsScreen() {
           </Pressable>
 
           <Pressable onPress={clearFrames} style={styles.devButton}>
-            <Text style={styles.devButtonText}>❌ Remove All Purchased Frames</Text>
+            <Text style={styles.devButtonText}>
+              ❌ Remove All Purchased Frames
+            </Text>
           </Pressable>
 
           <View style={styles.inputGroup}>

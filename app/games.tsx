@@ -7,21 +7,26 @@ export default function GamesScreen() {
 
   return (
     <View style={globalStyles.container}>
-      <Pressable onPress={() => router.replace("/home")} style={{ marginBottom: 20 }}>
-        <Text style={{ color: "blue" }}>← Back</Text>
-      </Pressable>
-
       <Text style={globalStyles.title}>Games 🎮</Text>
 
-      <Pressable style={localStyles.gameButton} onPress={() => router.push("/games/wordle")}>
+      <Pressable
+        style={localStyles.gameButton}
+        onPress={() => router.push("/games/wordle")}
+      >
         <Text style={localStyles.buttonText}>🟩 Wordle</Text>
       </Pressable>
 
-      <Pressable style={localStyles.gameButton} onPress={() => router.push("/games/sudoku")}>
+      <Pressable
+        style={localStyles.gameButton}
+        onPress={() => router.push("/games/sudoku")}
+      >
         <Text style={localStyles.buttonText}>🔢 Sudoku</Text>
       </Pressable>
 
-      <Pressable style={localStyles.gameButton} onPress={() => router.push("/games/memory")}>
+      <Pressable
+        style={localStyles.gameButton}
+        onPress={() => router.push("/games/memory")}
+      >
         <Text style={localStyles.buttonText}>🧠 Memory Match</Text>
       </Pressable>
     </View>

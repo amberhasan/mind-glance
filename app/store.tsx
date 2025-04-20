@@ -107,7 +107,12 @@ export default function StoreScreen() {
     await AsyncStorage.setItem("mana", newMana.toString());
   };
 
-  const buyItem = async (type: string, id: string, cost: number, extra?: any) => {
+  const buyItem = async (
+    type: string,
+    id: string,
+    cost: number,
+    extra?: any
+  ) => {
     if (mana < cost) return Alert.alert("Insufficient Mana");
 
     if (type === "frame") {
@@ -146,10 +151,6 @@ export default function StoreScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Pressable onPress={() => router.back()} style={{ marginBottom: 20 }}>
-        <Text style={{ color: "blue" }}>← Back</Text>
-      </Pressable>
-
       <Text style={styles.title}>🛒 Store</Text>
       <Text style={styles.mana}>💠 Mana: {mana}</Text>
 
@@ -159,11 +160,16 @@ export default function StoreScreen() {
         {frames.map((item) => (
           <View key={item.id} style={styles.card}>
             <Image source={item.image} style={styles.image} />
-            <Text>{item.name} - {item.cost}💠</Text>
+            <Text>
+              {item.name} - {item.cost}💠
+            </Text>
             {purchasedFrames.includes(item.id) ? (
               <Text style={{ color: "green" }}>✅ Owned</Text>
             ) : (
-              <Pressable style={styles.buyButton} onPress={() => buyItem("frame", item.id, item.cost)}>
+              <Pressable
+                style={styles.buyButton}
+                onPress={() => buyItem("frame", item.id, item.cost)}
+              >
                 <Text style={styles.buyText}>Buy</Text>
               </Pressable>
             )}
@@ -176,8 +182,13 @@ export default function StoreScreen() {
         <Text style={styles.section}>💡 Hints</Text>
         {hintOptions.map((item) => (
           <View key={item.id} style={styles.card}>
-            <Text>{item.label} - {item.cost}💠</Text>
-            <Pressable style={styles.buyButton} onPress={() => buyItem("hint", item.id, item.cost, item)}>
+            <Text>
+              {item.label} - {item.cost}💠
+            </Text>
+            <Pressable
+              style={styles.buyButton}
+              onPress={() => buyItem("hint", item.id, item.cost, item)}
+            >
               <Text style={styles.buyText}>Buy</Text>
             </Pressable>
           </View>
@@ -189,7 +200,9 @@ export default function StoreScreen() {
         <Text style={styles.section}>🎵 Music Tracks</Text>
         {musicTracks.map((track) => (
           <View key={track.id} style={styles.card}>
-            <Text>{track.name} - {track.cost}💠</Text>
+            <Text>
+              {track.name} - {track.cost}💠
+            </Text>
             <View style={{ flexDirection: "row", gap: 10, marginTop: 8 }}>
               <Pressable
                 style={styles.previewButton}
@@ -198,7 +211,9 @@ export default function StoreScreen() {
                 <Text style={styles.buyText}>▶️ Preview</Text>
               </Pressable>
               {purchasedTracks.includes(track.id) ? (
-                <Text style={{ color: "green", alignSelf: "center" }}>✅ Owned</Text>
+                <Text style={{ color: "green", alignSelf: "center" }}>
+                  ✅ Owned
+                </Text>
               ) : (
                 <Pressable
                   style={styles.buyButton}

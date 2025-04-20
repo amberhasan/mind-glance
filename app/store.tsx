@@ -1,34 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   ScrollView,
-  Pressable,
   Image,
+  Pressable,
   Alert,
   StyleSheet,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 
-// Placeholder frames for demo purposes
-const frameOptions = [
+const frames = [
   {
     id: "frame1",
     name: "Gold Frame",
-    cost: 2,
+    cost: 50,
     image: { uri: "https://via.placeholder.com/100x100.png?text=Gold" },
   },
   {
     id: "frame2",
     name: "Crystal Frame",
-    cost: 3,
+    cost: 75,
     image: { uri: "https://via.placeholder.com/100x100.png?text=Crystal" },
   },
   {
     id: "frame3",
     name: "Flame Frame",
-    cost: 5,
+    cost: 100,
     image: { uri: "https://via.placeholder.com/100x100.png?text=Flame" },
   },
 ];
@@ -36,80 +35,64 @@ const frameOptions = [
 export default function StoreScreen() {
   const router = useRouter();
   const [mana, setMana] = useState(0);
-  const [ownedFrames, setOwnedFrames] = useState<string[]>([]);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [purchased, setPurchased] = useState<string[]>([]);
 
   useEffect(() => {
     const load = async () => {
       const savedMana = await AsyncStorage.getItem("mana");
-      const savedFrames = await AsyncStorage.getItem("frames");
-      const selectedFrame = await AsyncStorage.getItem("selectedFrame");
+      const savedPurchased = await AsyncStorage.getItem("purchasedFrames");
       setMana(savedMana ? parseInt(savedMana, 10) : 0);
-      setOwnedFrames(savedFrames ? JSON.parse(savedFrames) : []);
-      setSelected(selectedFrame);
+      setPurchased(savedPurchased ? JSON.parse(savedPurchased) : []);
     };
     load();
   }, []);
 
-  const buyFrame = async (frameId: string, cost: number) => {
-    if (ownedFrames.includes(frameId)) {
-      return selectFrame(frameId);
-    }
-
-    if (mana < cost) {
-      Alert.alert("Not enough Mana", "You need more Mana to buy this frame.");
+  const purchase = async (frameId: string, cost: number) => {
+    if (purchased.includes(frameId)) {
+      Alert.alert("Already owned", "You already purchased this frame.");
       return;
     }
 
-    const updatedMana = mana - cost;
-    const updatedFrames = [...ownedFrames, frameId];
+    if (mana < cost) {
+      Alert.alert("Not enough Mana", `You need ${cost} mana to buy this frame.`);
+      return;
+    }
 
-    setMana(updatedMana);
-    setOwnedFrames(updatedFrames);
-    await AsyncStorage.setItem("mana", updatedMana.toString());
-    await AsyncStorage.setItem("frames", JSON.stringify(updatedFrames));
-    selectFrame(frameId);
-  };
-
-  const selectFrame = async (frameId: string) => {
-    setSelected(frameId);
-    await AsyncStorage.setItem("selectedFrame", frameId);
-    Alert.alert("Frame Selected", "Your new profile frame is active!");
+    const updated = [...purchased, frameId];
+    const remainingMana = mana - cost;
+    setPurchased(updated);
+    setMana(remainingMana);
+    await AsyncStorage.setItem("purchasedFrames", JSON.stringify(updated));
+    await AsyncStorage.setItem("mana", remainingMana.toString());
+    Alert.alert("Success", `Purchased ${frameId}!`);
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Back Button */}
       <Pressable onPress={() => router.back()} style={{ marginBottom: 20 }}>
         <Text style={{ color: "blue" }}>← Back</Text>
       </Pressable>
 
-      {/* Title */}
       <Text style={styles.title}>Store 🛒</Text>
-      <Text style={styles.subtitle}>Mana: {mana}</Text>
+      <Text style={styles.manaText}>💠 Mana: {mana}</Text>
 
-      {frameOptions.map((frame) => (
-        <Pressable
-          key={frame.id}
-          onPress={() => buyFrame(frame.id, frame.cost)}
-          style={[
-            styles.frameCard,
-            selected === frame.id && {
-              borderColor: "#4caf50",
-              borderWidth: 2,
-            },
-          ]}
-        >
-          <Image source={frame.image} style={styles.frameImage} />
-          <Text style={styles.frameText}>{frame.name}</Text>
-          <Text style={styles.frameText}>
-            {ownedFrames.includes(frame.id)
-              ? selected === frame.id
-                ? "✅ Selected"
-                : "Tap to Select"
-              : `💠 ${frame.cost} Mana`}
-          </Text>
-        </Pressable>
+      {frames.map((frame) => (
+        <View key={frame.id} style={styles.card}>
+          <Image source={frame.image} style={styles.image} />
+          <Text style={styles.name}>{frame.name}</Text>
+          <Text style={styles.price}>Cost: {frame.cost} 💠</Text>
+
+          {purchased.includes(frame.id) ? (
+            <Text style={{ color: "green", marginTop: 8 }}>✅ Owned</Text>
+          ) : (
+            <Pressable
+              style={styles.buyButton}
+              onPress={() => purchase(frame.id, frame.cost)}
+            >
+              <Text style={{ color: "white", fontWeight: "bold" }}>Buy</Text>
+            </Pressable>
+          )}
+        </View>
       ))}
     </ScrollView>
   );
@@ -119,36 +102,46 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     backgroundColor: "#f4f4f5",
-    minHeight: "100%",
+    alignItems: "center",
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 10,
-    textAlign: "center",
   },
-  subtitle: {
+  manaText: {
     fontSize: 16,
     marginBottom: 20,
-    textAlign: "center",
-    color: "#555",
   },
-  frameCard: {
-    backgroundColor: "#fff",
+  card: {
+    width: "90%",
+    backgroundColor: "white",
     borderRadius: 12,
     padding: 16,
     alignItems: "center",
-    marginBottom: 16,
-    elevation: 2,
+    marginBottom: 20,
+    elevation: 3,
   },
-  frameImage: {
+  image: {
     width: 100,
     height: 100,
-    marginBottom: 12,
     resizeMode: "contain",
+    marginBottom: 12,
   },
-  frameText: {
-    fontSize: 16,
-    marginBottom: 4,
+  name: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 6,
+  },
+  price: {
+    fontSize: 14,
+    color: "#555",
+  },
+  buyButton: {
+    marginTop: 10,
+    backgroundColor: "#1976d2",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
   },
 });

@@ -8,6 +8,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     padding: 40,
   },
+
   card: {
     backgroundColor: "#ffffff",
     padding: 40,

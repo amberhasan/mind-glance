@@ -1,12 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  Pressable,
-  Alert,
-} from "react-native";
+import { View, Text, ScrollView, Image, Pressable, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from "../components/CustomButton";
@@ -45,9 +38,13 @@ export default function HomeScreen() {
 
   useEffect(() => {
     (async () => {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permission denied", "We need media access to upload a profile picture.");
+        Alert.alert(
+          "Permission denied",
+          "We need media access to upload a profile picture."
+        );
       }
     })();
   }, []);
@@ -79,42 +76,59 @@ export default function HomeScreen() {
       }}
     >
       {/* XP + Profile Header */}
-      <View style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 30,
-      }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 30,
+        }}
+      >
         {/* XP + Level */}
         <View style={{ flex: 1, marginRight: 10 }}>
-          <View style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginBottom: 4,
-          }}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 4,
+            }}
+          >
             <Text style={{ fontSize: 14 }}>Level {level}</Text>
-            <Text style={{ fontSize: 14 }}>XP: {xp % xpPerLevel} / {xpPerLevel}</Text>
+            <Text style={{ fontSize: 14 }}>
+              XP: {xp % xpPerLevel} / {xpPerLevel}
+            </Text>
           </View>
-          <View style={{
-            height: 10,
-            backgroundColor: "#ddd",
-            borderRadius: 10,
-            overflow: "hidden",
-          }}>
-            <View style={{
-              width: `${(xp % xpPerLevel) / xpPerLevel * 100}%`,
-              height: "100%",
-              backgroundColor: "#4CAF50",
-            }} />
+          <View
+            style={{
+              height: 10,
+              backgroundColor: "#ddd",
+              borderRadius: 10,
+              overflow: "hidden",
+            }}
+          >
+            <View
+              style={{
+                width: `${((xp % xpPerLevel) / xpPerLevel) * 100}%`,
+                height: "100%",
+                backgroundColor: "#4CAF50",
+              }}
+            />
           </View>
         </View>
 
         {/* Profile Picture */}
         <Pressable onPress={pickImage}>
           {profileImage ? (
-            <Image source={{ uri: profileImage }} style={{ width: 40, height: 40, borderRadius: 20 }} />
+            <Image
+              source={{ uri: profileImage }}
+              style={{ width: 40, height: 40, borderRadius: 20 }}
+            />
           ) : (
-            <MaterialCommunityIcons name="account-circle" size={40} color="#555" />
+            <MaterialCommunityIcons
+              name="account-circle"
+              size={40}
+              color="#555"
+            />
           )}
         </Pressable>
       </View>
@@ -125,33 +139,43 @@ export default function HomeScreen() {
       </View>
 
       {/* Title */}
-      <Text style={{
-        fontSize: 32,
-        fontWeight: "bold",
-        textAlign: "center",
-        marginBottom: 10,
-      }}>
+      <Text
+        style={{
+          fontSize: 32,
+          fontWeight: "bold",
+          textAlign: "center",
+          marginBottom: 10,
+        }}
+      >
         Mind Glance 🧠
       </Text>
-      <Text style={{
-        fontSize: 16,
-        color: "#555",
-        textAlign: "center",
-        marginBottom: 30,
-      }}>
+      <Text
+        style={{
+          fontSize: 16,
+          color: "#555",
+          textAlign: "center",
+          marginBottom: 30,
+        }}
+      >
         Your mental wellness companion
       </Text>
 
       {/* Button Grid */}
-      <View style={{
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        gap: 20,
-      }}>
+      <View
+        style={{
+          flexDirection: "row",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: 20,
+        }}
+      >
         <CustomButton title="Games" href="/games" icon="gamepad-variant" />
         <CustomButton title="To Do" href="/todo" icon="format-list-checks" />
-        <CustomButton title="Emotion Scan" href="/emotion-scan" icon="heart-pulse" />
+        <CustomButton
+          title="Activity Tracker"
+          href="/emotion-scan"
+          icon="heart-pulse"
+        />
         <CustomButton title="Journal" href="/journal" icon="book-open" />
         <CustomButton title="Store" href="/store" icon="shopping" />
         <CustomButton title="Options" href="/options" icon="cog" />

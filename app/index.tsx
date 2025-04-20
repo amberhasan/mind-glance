@@ -15,7 +15,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    if (email === "test@example.com" && password === "1234") {
+    if (email === "Test@example.com" && password === "1234") {
       router.push("/home");
     } else {
       Alert.alert("Login Failed", "Invalid email or password.");
@@ -23,10 +23,33 @@ export default function LoginScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center", padding: 24, backgroundColor: "#f3f4f6" }}>
-      <View style={{ backgroundColor: "white", borderRadius: 12, padding: 24, elevation: 5 }}>
-        <Text style={{ fontSize: 24, fontWeight: "bold", textAlign: "center" }}>Welcome back</Text>
-        <Text style={{ textAlign: "center", color: "#6b7280", marginTop: 4, marginBottom: 24 }}>
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: "center",
+        padding: 24,
+        backgroundColor: "#f3f4f6",
+      }}
+    >
+      <View
+        style={{
+          backgroundColor: "white",
+          borderRadius: 12,
+          padding: 24,
+          elevation: 5,
+        }}
+      >
+        <Text style={{ fontSize: 24, fontWeight: "bold", textAlign: "center" }}>
+          Welcome back
+        </Text>
+        <Text
+          style={{
+            textAlign: "center",
+            color: "#6b7280",
+            marginTop: 4,
+            marginBottom: 24,
+          }}
+        >
           Login to your Mind Glance account
         </Text>
 
@@ -35,7 +58,13 @@ export default function LoginScreen() {
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
-          style={{ borderColor: "#ccc", borderWidth: 1, borderRadius: 8, padding: 12, marginBottom: 16 }}
+          style={{
+            borderColor: "#ccc",
+            borderWidth: 1,
+            borderRadius: 8,
+            padding: 12,
+            marginBottom: 16,
+          }}
         />
 
         <TextInput
@@ -43,15 +72,35 @@ export default function LoginScreen() {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
-          style={{ borderColor: "#ccc", borderWidth: 1, borderRadius: 8, padding: 12, marginBottom: 16 }}
+          style={{
+            borderColor: "#ccc",
+            borderWidth: 1,
+            borderRadius: 8,
+            padding: 12,
+            marginBottom: 16,
+          }}
         />
 
-        <Pressable onPress={handleLogin} style={{ backgroundColor: "#4CAF50", padding: 14, borderRadius: 8, alignItems: "center" }}>
+        <Pressable
+          onPress={handleLogin}
+          style={{
+            backgroundColor: "#4CAF50",
+            padding: 14,
+            borderRadius: 8,
+            alignItems: "center",
+          }}
+        >
           <Text style={{ color: "white", fontWeight: "bold" }}>Login</Text>
         </Pressable>
 
         <Text style={{ textAlign: "center", fontSize: 12, marginTop: 16 }}>
-          Don’t have an account? <Text style={{ textDecorationLine: "underline" }} onPress={() => router.push("/signup")}>Sign up</Text>
+          Don’t have an account?{" "}
+          <Text
+            style={{ textDecorationLine: "underline" }}
+            onPress={() => router.push("/signup")}
+          >
+            Sign up
+          </Text>
         </Text>
       </View>
     </ScrollView>

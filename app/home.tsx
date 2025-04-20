@@ -14,9 +14,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from "../components/CustomButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMusic } from "../components/MusicContext";
+import { useRouter } from "expo-router";
 
-// Map of available frames
-const frameMap: { [key: string]: string } = {
+const frameMap: Record<string, string> = {
   frame1: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames3.png?raw=true",
   frame2: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames4.png?raw=true",
   frame3: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames6.png?raw=true",
@@ -31,6 +31,7 @@ export default function HomeScreen() {
   const [selectedFrame, setSelectedFrame] = useState<string | null>(null);
   const [showMoodModal, setShowMoodModal] = useState(true);
   const { isPlaying, toggle } = useMusic();
+  const router = useRouter();
 
   const xpPerLevel = 100;
 
@@ -77,7 +78,13 @@ export default function HomeScreen() {
         quality: 1,
       });
 
-      if (!result.canceled) {
+      if (
+        !result.canceled &&
+        "assets" in result &&
+        Array.isArray(result.assets) &&
+        result.assets.length > 0 &&
+        result.assets[0]?.uri
+      ) {
         setProfileImage(result.assets[0].uri);
       }
     } catch (err) {
@@ -85,14 +92,21 @@ export default function HomeScreen() {
     }
   };
 
-  const handleMoodResponse = (mood: string) => {
-    let message = "";
-    if (mood === "great") message = "That's awesome! Keep the good vibes going!";
-    else if (mood === "okay") message = "Totally okay to feel that way. Keep taking care of yourself.";
-    else if (mood === "bad") message = "Sending love 💙 Try journaling or doing something relaxing.";
-
-    alert(message);
+  const handleMoodResponse = async (mood: "great" | "okay" | "bad") => {
+    const newEntry = { mood, date: new Date().toISOString() };
+    const existing = await AsyncStorage.getItem("moodLog");
+    const moodLog = existing ? JSON.parse(existing) : [];
+    moodLog.push(newEntry);
+    await AsyncStorage.setItem("moodLog", JSON.stringify(moodLog));
     setShowMoodModal(false);
+
+    const message =
+      mood === "great"
+        ? "That's awesome! Keep the good vibes going!"
+        : mood === "okay"
+        ? "Totally okay to feel that way. Keep taking care of yourself."
+        : "Sending love 💙 Try journaling or doing something relaxing.";
+    alert(message);
   };
 
   return (
@@ -102,7 +116,7 @@ export default function HomeScreen() {
       resizeMode="cover"
     >
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Mood Check-In Modal */}
+        {/* Mood Modal */}
         <Modal visible={showMoodModal} transparent animationType="fade">
           <View style={styles.modalBackdrop}>
             <View style={styles.modalContainer}>
@@ -127,9 +141,10 @@ export default function HomeScreen() {
         <View style={styles.profileHeader}>
           <Pressable onPress={pickImage}>
             <View style={styles.frameContainer}>
-              {selectedFrame && frameMap[selectedFrame] && (
+              {selectedFrame && frameMap[selectedFrame] ? (
                 <Image source={{ uri: frameMap[selectedFrame] }} style={styles.frame} />
-              )}
+              ) : null}
+
               {profileImage ? (
                 <Image source={{ uri: profileImage }} style={styles.profilePic} />
               ) : (
@@ -150,7 +165,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* App Title */}
+        {/* Title */}
         <Text style={styles.title}>Mind Glance 🧠</Text>
         <Text style={styles.subtitle}>Your mental wellness companion</Text>
 
@@ -163,6 +178,14 @@ export default function HomeScreen() {
           <CustomButton title="Store" href="/store" icon="shopping" />
           <CustomButton title="Options" href="/options" icon="cog" />
         </View>
+
+        {/* Mood Stats Button */}
+        <Pressable
+          onPress={() => router.push("/moodstats")}
+          style={[styles.playButton, { backgroundColor: "#4CAF50", marginTop: 20 }]}
+        >
+          <Text style={styles.playButtonText}>📊 View Mood Stats</Text>
+        </Pressable>
 
         {/* Music Toggle */}
         <Pressable onPress={toggle} style={styles.playButton}>
@@ -191,7 +214,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 32, fontWeight: "bold", color: "#000", textAlign: "center", marginBottom: 6 },
   subtitle: { fontSize: 16, color: "#555", textAlign: "center", marginBottom: 30 },
   buttonGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 20, rowGap: 24 },
-  playButton: { marginTop: 40, backgroundColor: "#1976d2", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8 },
+  playButton: { marginTop: 20, backgroundColor: "#1976d2", paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8 },
   playButtonText: { color: "white", fontWeight: "bold", fontSize: 16 },
   modalBackdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", alignItems: "center" },
   modalContainer: { width: "80%", backgroundColor: "white", borderRadius: 10, padding: 20, alignItems: "center" },

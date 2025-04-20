@@ -172,7 +172,7 @@ export default function WordleGame() {
         <Text style={{ fontSize: 16, color: "blue" }}>← Back</Text>
       </Pressable>
 
-      <Text style={styles.title}>🟩 Wordle Clone</Text>
+      <Text style={styles.title}>🟩 Wordle</Text>
       <Text style={styles.xp}>🧠 XP: {xp}</Text>
 
       {guesses.map((guess, index) => (

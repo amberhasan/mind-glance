@@ -28,9 +28,7 @@ export default function TodoList() {
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [editDueDate, setEditDueDate] = useState("");
-  const [editPriority, setEditPriority] = useState<"Low" | "Medium" | "High">(
-    "Medium"
-  );
+  const [editPriority, setEditPriority] = useState<"Low" | "Medium" | "High">("Medium");
   const modalOpacity = useState(new Animated.Value(0))[0];
   const router = useRouter();
 
@@ -53,9 +51,7 @@ export default function TodoList() {
 
   const toggleTask = (id: string) => {
     setTasks((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, done: !item.done } : item
-      )
+      prev.map((item) => (item.id === id ? { ...item, done: !item.done } : item))
     );
   };
 
@@ -105,18 +101,13 @@ export default function TodoList() {
     });
   };
 
-  const sortedTasks = [...tasks].sort(
-    (a, b) => Number(a.done) - Number(b.done)
-  );
+  const sortedTasks = [...tasks].sort((a, b) => Number(a.done) - Number(b.done));
 
   const renderTasks = (done: boolean) =>
     sortedTasks
       .filter((item) => item.done === done)
       .map((item) => (
-        <View
-          key={item.id}
-          style={[styles.taskItem, item.done && styles.taskDone]}
-        >
+        <View key={item.id} style={[styles.taskItem, item.done && styles.taskDone]}>
           <Pressable
             onPress={() => toggleTask(item.id)}
             onLongPress={() => startEditTask(item)}
@@ -125,14 +116,15 @@ export default function TodoList() {
             <Text
               style={{
                 color: item.done
-                  ? "gray"
+                  ? "#888"
                   : item.priority === "High"
                   ? "#d32f2f"
                   : item.priority === "Medium"
                   ? "#fbc02d"
                   : "#388e3c",
                 textDecorationLine: item.done ? "line-through" : "none",
-                fontFamily: "System",
+                fontWeight: "700",
+                fontSize: 16,
               }}
             >
               {item.priority === "High"
@@ -143,10 +135,7 @@ export default function TodoList() {
               {item.text} {item.dueDate ? `- Due: ${item.dueDate}` : ""}
             </Text>
           </Pressable>
-          <Pressable
-            onPress={() => deleteTask(item.id)}
-            style={styles.deleteButton}
-          >
+          <Pressable onPress={() => deleteTask(item.id)} style={styles.deleteButton}>
             <Text style={styles.deleteText}>🗑</Text>
           </Pressable>
         </View>
@@ -196,7 +185,7 @@ export default function TodoList() {
         {renderTasks(true)}
 
         {tasks.length === 0 && (
-          <Text style={{ textAlign: "center", color: "gray" }}>
+          <Text style={{ textAlign: "center", color: "#888", fontSize: 16 }}>
             No tasks yet
           </Text>
         )}
@@ -204,11 +193,11 @@ export default function TodoList() {
 
       {editingTaskId && (
         <Modal transparent animationType="none">
-          <Animated.View
-            style={[styles.modalContainer, { opacity: modalOpacity }]}
-          >
+          <Animated.View style={[styles.modalContainer, { opacity: modalOpacity }]}>
             <View style={styles.modalContent}>
-              <Text style={{ marginBottom: 10 }}>Edit Task</Text>
+              <Text style={{ marginBottom: 10, fontWeight: "bold", fontSize: 18 }}>
+                Edit Task
+              </Text>
               <TextInput
                 value={editText}
                 onChangeText={setEditText}
@@ -233,10 +222,10 @@ export default function TodoList() {
               </Picker>
               <View style={styles.modalButtons}>
                 <Pressable onPress={closeModal}>
-                  <Text style={{ color: "gray" }}>Cancel</Text>
+                  <Text style={{ color: "gray", fontWeight: "bold" }}>Cancel</Text>
                 </Pressable>
                 <Pressable onPress={saveEditTask}>
-                  <Text style={{ color: "blue" }}>Save</Text>
+                  <Text style={{ color: "blue", fontWeight: "bold" }}>Save</Text>
                 </Pressable>
               </View>
             </View>
@@ -255,18 +244,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9fafb",
   },
   header: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 28,
+    fontWeight: "900",
     marginBottom: 20,
     textAlign: "center",
-    fontFamily: "System",
+    color: "#1f2937",
   },
   groupHeader: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "800",
     marginTop: 20,
     marginBottom: 10,
-    color: "#333",
+    color: "#111827",
   },
   inputContainer: {
     marginBottom: 20,
@@ -275,18 +264,22 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
-    padding: 12,
+    padding: 14,
     backgroundColor: "white",
-    marginBottom: 10,
-    fontFamily: "System",
+    marginBottom: 12,
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#1f2937",
   },
   label: {
-    fontWeight: "bold",
-    marginBottom: 4,
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#374151",
+    marginBottom: 6,
   },
   addButton: {
     backgroundColor: "#4CAF50",
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 16,
     borderRadius: 8,
     justifyContent: "center",
@@ -294,20 +287,21 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: "white",
-    fontWeight: "bold",
+    fontWeight: "800",
+    fontSize: 16,
   },
   taskItem: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 12,
+    padding: 14,
     backgroundColor: "white",
     borderColor: "#ddd",
     borderWidth: 1,
     borderRadius: 8,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   taskDone: {
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "#f0f0f0",
   },
   deleteButton: {
     backgroundColor: "#f44336",
@@ -319,6 +313,7 @@ const styles = StyleSheet.create({
   deleteText: {
     color: "white",
     fontWeight: "bold",
+    fontSize: 16,
   },
   modalContainer: {
     flex: 1,
@@ -327,14 +322,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContent: {
-    width: "80%",
+    width: "85%",
     backgroundColor: "white",
-    padding: 20,
+    padding: 24,
     borderRadius: 10,
   },
   modalButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 10,
+    marginTop: 16,
   },
 });

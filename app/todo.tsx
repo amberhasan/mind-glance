@@ -147,13 +147,12 @@ export default function TodoList() {
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => router.back()} style={{ marginBottom: 20 }}>
+      <Pressable onPress={() => router.replace("/home")} style={{ marginBottom: 20 }}>
         <Text style={{ color: "blue" }}>← Back</Text>
       </Pressable>
 
       <Text style={styles.header}>📝 To-Do Checklist</Text>
 
-      {/* Input Form */}
       <View style={styles.inputContainer}>
         <TextInput
           value={task}
@@ -182,7 +181,6 @@ export default function TodoList() {
         </Pressable>
       </View>
 
-      {/* Task Groups */}
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         {tasks.some((t) => !t.done) && (
           <Text style={styles.groupHeader}>📌 Incomplete Tasks</Text>
@@ -201,7 +199,6 @@ export default function TodoList() {
         )}
       </ScrollView>
 
-      {/* Edit Modal */}
       {editingTaskId && (
         <Modal transparent animationType="none">
           <Animated.View style={[styles.modalContainer, { opacity: modalOpacity }]}>

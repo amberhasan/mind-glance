@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, Pressable, Alert } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  Pressable,
+  Alert,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from "../components/CustomButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useMusic } from "../components/MusicContext"; // ✅ Music Context
 
 export default function HomeScreen() {
   const [xp, setXp] = useState(0);
@@ -11,6 +19,7 @@ export default function HomeScreen() {
   const [level, setLevel] = useState(1);
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
+  const { isPlaying, toggle } = useMusic(); // ✅ useMusic hook
   const xpPerLevel = 100;
 
   useEffect(() => {
@@ -38,13 +47,9 @@ export default function HomeScreen() {
 
   useEffect(() => {
     (async () => {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert(
-          "Permission denied",
-          "We need media access to upload a profile picture."
-        );
+        Alert.alert("Permission denied", "We need media access to upload a profile picture.");
       }
     })();
   }, []);
@@ -124,18 +129,29 @@ export default function HomeScreen() {
               style={{ width: 40, height: 40, borderRadius: 20 }}
             />
           ) : (
-            <MaterialCommunityIcons
-              name="account-circle"
-              size={40}
-              color="#555"
-            />
+            <MaterialCommunityIcons name="account-circle" size={40} color="#555" />
           )}
         </Pressable>
       </View>
 
-      {/* Mana */}
+      {/* Mana + Music Toggle */}
       <View style={{ alignItems: "center", marginBottom: 20 }}>
         <Text style={{ fontSize: 16 }}>🪄 Mana: {mana}</Text>
+
+        <Pressable
+          onPress={toggle}
+          style={{
+            marginTop: 10,
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+            backgroundColor: "#1976d2",
+            borderRadius: 6,
+          }}
+        >
+          <Text style={{ color: "white", fontWeight: "bold" }}>
+            {isPlaying ? "🔊 Pause Music" : "🎵 Play Music"}
+          </Text>
+        </Pressable>
       </View>
 
       {/* Title */}
@@ -171,11 +187,7 @@ export default function HomeScreen() {
       >
         <CustomButton title="Games" href="/games" icon="gamepad-variant" />
         <CustomButton title="To Do" href="/todo" icon="format-list-checks" />
-        <CustomButton
-          title="Activity Tracker"
-          href="/emotion-scan"
-          icon="heart-pulse"
-        />
+        <CustomButton title="Activity Tracker" href="/emotion-scan" icon="heart-pulse" />
         <CustomButton title="Journal" href="/journal" icon="book-open" />
         <CustomButton title="Store" href="/store" icon="shopping" />
         <CustomButton title="Options" href="/options" icon="cog" />

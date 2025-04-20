@@ -7,6 +7,7 @@ import {
   Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
 const WORD_LIST = ["apple", "grape", "peach", "lemon", "melon"];
 const MAX_GUESSES = 6;
@@ -18,6 +19,8 @@ const KEYBOARD_ROWS = [
 ];
 
 export default function WordleGame() {
+  const router = useRouter();
+
   const [targetWord, setTargetWord] = useState(
     WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)].toLowerCase()
   );
@@ -165,6 +168,10 @@ export default function WordleGame() {
 
   return (
     <View style={styles.container}>
+      <Pressable onPress={() => router.replace("/home")} style={{ marginBottom: 10 }}>
+        <Text style={{ fontSize: 16, color: "blue" }}>← Back</Text>
+      </Pressable>
+
       <Text style={styles.title}>🟩 Wordle Clone</Text>
       <Text style={styles.xp}>🧠 XP: {xp}</Text>
 

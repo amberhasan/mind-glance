@@ -1,54 +1,65 @@
-// components/MusicContext.tsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Audio } from "expo-av";
-import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const MusicContext = createContext<any>(null);
+type MusicContextType = {
+  isPlaying: boolean;
+  toggle: () => void;
+  currentTrack: string;
+};
 
-export const MusicProvider = ({ children }: { children: React.ReactNode }) => {
+const MusicContext = createContext<MusicContextType | undefined>(undefined);
+
+export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-
-  const musicUri = "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM60.mp3?raw=true"; // Change if needed
-
-  const loadSound = async () => {
-    try {
-      const { sound: loadedSound } = await Audio.Sound.createAsync(
-        { uri: musicUri },
-        { shouldPlay: true, isLooping: true }
-      );
-      setSound(loadedSound);
-      setIsPlaying(true);
-    } catch (error) {
-      Alert.alert("Error", "Failed to load sound");
-    }
-  };
-
-  const toggle = async () => {
-    if (!sound) {
-      await loadSound();
-    } else {
-      const status = await sound.getStatusAsync();
-      if (status.isLoaded) {
-        if (status.isPlaying) {
-          await sound.pauseAsync();
-          setIsPlaying(false);
-        } else {
-          await sound.playAsync();
-          setIsPlaying(true);
-        }
-      }
-    }
-  };
+  const [currentTrack, setCurrentTrack] = useState("calm");
 
   useEffect(() => {
+    const loadTrack = async () => {
+      const stored = await AsyncStorage.getItem("selectedTrack");
+      const track = stored || "calm";
+      setCurrentTrack(track);
+      await playMusic(track);
+    };
+    loadTrack();
     return () => {
       if (sound) sound.unloadAsync();
     };
-  }, [sound]);
+  }, []);
+
+  const trackMap: { [key: string]: string } = {
+    calm: "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM120.mp3?raw=true",
+    retro: "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM98.mp3?raw=true",
+    nature: "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM72.mp3?raw=true",
+  };
+
+  const playMusic = async (trackId: string) => {
+    if (sound) {
+      await sound.stopAsync();
+      await sound.unloadAsync();
+    }
+
+    const { sound: newSound } = await Audio.Sound.createAsync({ uri: trackMap[trackId] });
+    setSound(newSound);
+    setIsPlaying(true);
+    await newSound.setIsLoopingAsync(true);
+    await newSound.playAsync();
+  };
+
+  const toggle = async () => {
+    if (!sound) return;
+    if (isPlaying) {
+      await sound.pauseAsync();
+      setIsPlaying(false);
+    } else {
+      await sound.playAsync();
+      setIsPlaying(true);
+    }
+  };
 
   return (
-    <MusicContext.Provider value={{ isPlaying, toggle }}>
+    <MusicContext.Provider value={{ isPlaying, toggle, currentTrack }}>
       {children}
     </MusicContext.Provider>
   );
@@ -56,6 +67,8 @@ export const MusicProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useMusic = () => {
   const context = useContext(MusicContext);
-  if (!context) throw new Error("useMusic must be used within MusicProvider");
+  if (!context) {
+    throw new Error("useMusic must be used within MusicProvider");
+  }
   return context;
 };

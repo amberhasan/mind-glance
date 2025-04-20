@@ -1,15 +1,15 @@
 import React from "react";
-import { Pressable, Text, StyleSheet, View } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-type Props = {
+interface CustomButtonProps {
   title: string;
-  icon: keyof typeof MaterialCommunityIcons.glyphMap;
   href: string;
-};
+  icon: any;
+}
 
-export default function CustomButton({ title, icon, href }: Props) {
+export default function CustomButton({ title, href, icon }: CustomButtonProps) {
   const router = useRouter();
 
   return (
@@ -17,41 +17,38 @@ export default function CustomButton({ title, icon, href }: Props) {
       onPress={() => router.push(href)}
       style={({ pressed }) => [
         styles.button,
-        pressed ? styles.pressed : styles.shadow,
+        pressed && styles.buttonPressed,
       ]}
     >
-      <MaterialCommunityIcons name={icon} size={28} color="white" />
-      <Text style={styles.text}>{title}</Text>
+      <MaterialCommunityIcons name={icon} size={32} color="#fff" />
+      <Text style={styles.buttonText}>{title}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    width: 150,
-    height: 100,
-    backgroundColor: "#1976d2",
-    borderRadius: 10,
+    width: 140,
+    height: 140,
+    borderRadius: 16,
+    backgroundColor: "#2e7d32",
     justifyContent: "center",
     alignItems: "center",
-    margin: 10,
-    transition: "all 0.2s ease-in-out",
-  },
-  pressed: {
-    transform: [{ scale: 0.97 }],
-    backgroundColor: "#115293",
-  },
-  shadow: {
+    elevation: 4,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 6,
+    shadowRadius: 5,
   },
-  text: {
-    color: "white",
+  buttonPressed: {
+    transform: [{ scale: 0.97 }],
+    opacity: 0.85,
+  },
+  buttonText: {
     marginTop: 8,
-    fontWeight: "bold",
+    color: "white",
     fontSize: 16,
+    fontWeight: "600",
+    textAlign: "center",
   },
 });

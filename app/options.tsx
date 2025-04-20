@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"; 
 import {
   View,
   Text,
@@ -44,11 +44,31 @@ const frameOptions = [
   },
 ];
 
+const musicTracks = [
+  {
+    id: "calm",
+    name: "Serenity",
+    preview: "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM120.mp3?raw=true",
+  },
+  {
+    id: "retro",
+    name: "Exploration",
+    preview: "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM98.mp3?raw=true",
+  },
+  {
+    id: "nature",
+    name: "Galaxy",
+    preview: "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM72.mp3?raw=true",
+  },
+];
+
 export default function OptionsScreen() {
   const router = useRouter();
   const [purchasedFrames, setPurchasedFrames] = useState<string[]>([]);
   const [ownedFrames, setOwnedFrames] = useState<string[]>([]);
   const [selectedFrame, setSelectedFrame] = useState<string | null>(null);
+  const [purchasedTracks, setPurchasedTracks] = useState<string[]>([]);
+  const [selectedMusic, setSelectedMusic] = useState<string | null>(null);
   const [devMode, setDevMode] = useState(false);
   const [xpInput, setXpInput] = useState("");
   const [manaInput, setManaInput] = useState("");
@@ -59,10 +79,14 @@ export default function OptionsScreen() {
       const savedPurchased = await AsyncStorage.getItem("purchasedFrames");
       const savedSelected = await AsyncStorage.getItem("selectedFrame");
       const savedDev = await AsyncStorage.getItem("devMode");
-      const parsed = savedPurchased ? JSON.parse(savedPurchased) : [];
-      setPurchasedFrames(parsed);
-      setOwnedFrames(parsed);
+      const savedTracks = await AsyncStorage.getItem("purchasedTracks");
+      const savedMusic = await AsyncStorage.getItem("selectedMusic");
+
+      setPurchasedFrames(savedPurchased ? JSON.parse(savedPurchased) : []);
+      setOwnedFrames(savedPurchased ? JSON.parse(savedPurchased) : []);
+      setPurchasedTracks(savedTracks ? JSON.parse(savedTracks) : []);
       setSelectedFrame(savedSelected || null);
+      setSelectedMusic(savedMusic || null);
       setDevMode(savedDev === "true");
     };
     loadData();
@@ -72,6 +96,12 @@ export default function OptionsScreen() {
     setSelectedFrame(id);
     await AsyncStorage.setItem("selectedFrame", id);
     Alert.alert("Updated", "Your frame has been equipped!");
+  };
+
+  const handleSelectMusic = async (id: string) => {
+    setSelectedMusic(id);
+    await AsyncStorage.setItem("selectedMusic", id);
+    Alert.alert("Updated", "Background music has been changed!");
   };
 
   const toggleDevMode = async () => {
@@ -152,6 +182,37 @@ export default function OptionsScreen() {
           )}
         </View>
       ))}
+
+      <Text style={styles.subtitle}>Select Background Music 🎵</Text>
+
+      {musicTracks.map((track) => {
+        if (!purchasedTracks.includes(track.id)) return null;
+
+        return (
+          <View
+            key={track.id}
+            style={[
+              styles.card,
+              selectedMusic === track.id && {
+                borderColor: "#4caf50",
+                borderWidth: 2,
+              },
+            ]}
+          >
+            <Text style={styles.name}>{track.name}</Text>
+            {selectedMusic === track.id ? (
+              <Text style={styles.status}>✅ Equipped</Text>
+            ) : (
+              <Pressable
+                onPress={() => handleSelectMusic(track.id)}
+                style={styles.buyButton}
+              >
+                <Text style={styles.buyText}>Equip</Text>
+              </Pressable>
+            )}
+          </View>
+        );
+      })}
 
       <View style={styles.devToggle}>
         <Text style={{ fontWeight: "bold", fontSize: 16 }}>Dev Mode</Text>

@@ -7,6 +7,7 @@ import {
   Pressable,
   Alert,
   StyleSheet,
+  ImageBackground,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,6 +15,7 @@ import CustomButton from "../components/CustomButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMusic } from "../components/MusicContext";
 
+// Map of available frames
 const frameMap: { [key: string]: string } = {
   frame1: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames3.png?raw=true",
   frame2: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames4.png?raw=true",
@@ -27,8 +29,8 @@ export default function HomeScreen() {
   const [level, setLevel] = useState(1);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [selectedFrame, setSelectedFrame] = useState<string | null>(null);
-
   const { isPlaying, toggle } = useMusic();
+
   const xpPerLevel = 100;
 
   useEffect(() => {
@@ -83,123 +85,96 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={{
-        flexGrow: 1,
-        paddingTop: 60,
-        paddingHorizontal: 20,
-        backgroundColor: "#f3f4f6",
-        paddingBottom: 40,
-      }}
+    <ImageBackground
+      source={require("../assets/images/TestBGImage.png")}
+      style={styles.background}
+      resizeMode="cover"
     >
-      {/* XP + Profile Header */}
-      <View style={styles.headerContainer}>
-        {/* XP + Level */}
-        <View style={{ flex: 1, marginRight: 10 }}>
-          <View style={styles.levelRow}>
-            <Text style={styles.levelText}>Level {level}</Text>
-            <Text style={styles.levelText}>
-              XP: {xp % xpPerLevel} / {xpPerLevel}
-            </Text>
-          </View>
-          <View style={styles.progressBar}>
-            <View
-              style={{
-                width: `${((xp % xpPerLevel) / xpPerLevel) * 100}%`,
-                height: "100%",
-                backgroundColor: "#4CAF50",
-              }}
-            />
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Profile + XP Header */}
+        <View style={styles.profileHeader}>
+          <Pressable onPress={pickImage}>
+            <View style={styles.frameContainer}>
+              {selectedFrame && frameMap[selectedFrame] && (
+                <Image source={{ uri: frameMap[selectedFrame] }} style={styles.frame} />
+              )}
+              {profileImage ? (
+                <Image source={{ uri: profileImage }} style={styles.profilePic} />
+              ) : (
+                <MaterialCommunityIcons name="account-circle" size={70} color="#555" />
+              )}
+            </View>
+          </Pressable>
+
+          <View style={styles.stats}>
+            <Text style={styles.level}>Level {level}</Text>
+            <Text style={styles.xpText}>XP: {xp % xpPerLevel} / {xpPerLevel}</Text>
+            <View style={styles.xpBarBackground}>
+              <View
+                style={[
+                  styles.xpBar,
+                  { width: `${((xp % xpPerLevel) / xpPerLevel) * 100}%` },
+                ]}
+              />
+            </View>
+            <Text style={styles.mana}>🪄 Mana: {mana}</Text>
           </View>
         </View>
 
-        {/* Profile Picture with Frame */}
-        <Pressable onPress={pickImage}>
-          <View style={styles.frameContainer}>
-            {selectedFrame && frameMap[selectedFrame] && (
-              <Image source={{ uri: frameMap[selectedFrame] }} style={styles.frame} />
-            )}
-            {profileImage ? (
-              <Image source={{ uri: profileImage }} style={styles.profilePic} />
-            ) : (
-              <MaterialCommunityIcons name="account-circle" size={60} color="#555" />
-            )}
-          </View>
-        </Pressable>
-      </View>
+        <Text style={styles.title}>Mind Glance 🧠</Text>
+        <Text style={styles.subtitle}>Your mental wellness companion</Text>
 
-      {/* Mana */}
-      <View style={{ alignItems: "center", marginBottom: 20 }}>
-        <Text style={{ fontSize: 16 }}>🪄 Mana: {mana}</Text>
-      </View>
+        {/* Navigation Buttons */}
+        <View style={styles.buttonGrid}>
+          <CustomButton title="Games" href="/games" icon="gamepad-variant" />
+          <CustomButton title="To Do" href="/todo" icon="format-list-checks" />
+          <CustomButton title="Activity Tracker" href="/emotion-scan" icon="heart-pulse" />
+          <CustomButton title="Journal" href="/journal" icon="book-open" />
+          <CustomButton title="Store" href="/store" icon="shopping" />
+          <CustomButton title="Options" href="/options" icon="cog" />
+        </View>
 
-      {/* Title */}
-      <Text style={styles.title}>Mind Glance 🧠</Text>
-      <Text style={styles.subtitle}>Your mental wellness companion</Text>
-
-      {/* Button Grid */}
-      <View style={styles.buttonGrid}>
-        <CustomButton title="Games" href="/games" icon="gamepad-variant" />
-        <CustomButton title="To Do" href="/todo" icon="format-list-checks" />
-        <CustomButton title="Activity Tracker" href="/emotion-scan" icon="heart-pulse" />
-        <CustomButton title="Journal" href="/journal" icon="book-open" />
-        <CustomButton title="Store" href="/store" icon="shopping" />
-        <CustomButton title="Options" href="/options" icon="cog" />
-      </View>
-
-      {/* Music Button at Bottom */}
-      <View style={{ alignItems: "center", marginTop: 40 }}>
-        <Pressable
-          onPress={toggle}
-          style={{
-            marginTop: 10,
-            paddingHorizontal: 16,
-            paddingVertical: 10,
-            backgroundColor: "#1976d2",
-            borderRadius: 6,
-          }}
-        >
-          <Text style={{ color: "white", fontWeight: "bold" }}>
+        {/* Music Toggle */}
+        <Pressable onPress={toggle} style={styles.playButton}>
+          <Text style={styles.playButtonText}>
             {isPlaying ? "🔊 Pause Music" : "🎵 Play Music"}
           </Text>
         </Pressable>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  background: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  container: {
+    flexGrow: 1,
     alignItems: "center",
-    marginBottom: 30,
+    paddingTop: 60,
+    paddingBottom: 40,
+    paddingHorizontal: 20,
   },
-  levelRow: {
+  profileHeader: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 4,
-  },
-  levelText: {
-    fontSize: 14,
-  },
-  progressBar: {
-    height: 10,
-    backgroundColor: "#ddd",
-    borderRadius: 10,
-    overflow: "hidden",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 30,
   },
   frameContainer: {
     width: 100,
     height: 100,
-    position: "relative",
     justifyContent: "center",
     alignItems: "center",
+    marginRight: 20,
   },
   profilePic: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     zIndex: 1,
   },
   frame: {
@@ -210,11 +185,41 @@ const styles = StyleSheet.create({
     left: 0,
     zIndex: 2,
   },
+  stats: {
+    flex: 1,
+  },
+  level: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#000",
+    marginBottom: 4,
+  },
+  xpText: {
+    fontSize: 14,
+    color: "#555",
+    marginBottom: 4,
+  },
+  xpBarBackground: {
+    height: 10,
+    backgroundColor: "#ddd",
+    borderRadius: 10,
+    overflow: "hidden",
+    marginBottom: 8,
+  },
+  xpBar: {
+    height: "100%",
+    backgroundColor: "#4CAF50",
+  },
+  mana: {
+    fontSize: 14,
+    color: "#000",
+  },
   title: {
     fontSize: 32,
     fontWeight: "bold",
+    color: "#000",
     textAlign: "center",
-    marginBottom: 10,
+    marginBottom: 6,
   },
   subtitle: {
     fontSize: 16,
@@ -227,5 +232,18 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "center",
     gap: 20,
+    rowGap: 24,
+  },
+  playButton: {
+    marginTop: 40,
+    backgroundColor: "#1976d2",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  playButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

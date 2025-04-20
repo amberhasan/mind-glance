@@ -1,47 +1,57 @@
-import { Pressable, Text, View } from "react-native";
+import React from "react";
+import { Pressable, Text, StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-export default function CustomButton({
-  title,
-  href,
-  icon,
-}: {
+type Props = {
   title: string;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
   href: string;
-  icon: string;
-}) {
+};
+
+export default function CustomButton({ title, icon, href }: Props) {
   const router = useRouter();
 
   return (
     <Pressable
       onPress={() => router.push(href)}
-      style={{
-        backgroundColor: "#ffffff",
-        padding: 20,
-        borderRadius: 16,
-        width: 140,
-        alignItems: "center",
-        justifyContent: "center",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 6,
-        elevation: 5,
-      }}
+      style={({ pressed }) => [
+        styles.button,
+        pressed ? styles.pressed : styles.shadow,
+      ]}
     >
-      <MaterialCommunityIcons name={icon} size={32} color="#4a4a4a" />
-      <Text
-        style={{
-          color: "#1a1a1a",
-          fontWeight: "bold",
-          fontSize: 14,
-          marginTop: 8,
-          textAlign: "center",
-        }}
-      >
-        {title}
-      </Text>
+      <MaterialCommunityIcons name={icon} size={28} color="white" />
+      <Text style={styles.text}>{title}</Text>
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    width: 150,
+    height: 100,
+    backgroundColor: "#1976d2",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 10,
+    transition: "all 0.2s ease-in-out",
+  },
+  pressed: {
+    transform: [{ scale: 0.97 }],
+    backgroundColor: "#115293",
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  text: {
+    color: "white",
+    marginTop: 8,
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+});

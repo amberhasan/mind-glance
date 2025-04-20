@@ -1,6 +1,5 @@
-// app/_layout.tsx
+import { MusicProvider } from "../components/MusicContext";
 import { Stack } from "expo-router";
-import { MusicProvider } from "../components/MusicContext"; // adjust path if needed
 
 export default function Layout() {
   return (

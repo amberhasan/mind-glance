@@ -1,64 +1,54 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+// components/MusicContext.tsx
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { Audio } from "expo-av";
+import { Alert } from "react-native";
 
-type MusicContextType = {
-  isPlaying: boolean;
-  play: () => Promise<void>;
-  pause: () => Promise<void>;
-  toggle: () => Promise<void>;
-};
+const MusicContext = createContext<any>(null);
 
-const MusicContext = createContext<MusicContextType | null>(null);
-
-export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const sound = useRef<Audio.Sound | null>(null);
+export const MusicProvider = ({ children }: { children: React.ReactNode }) => {
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  useEffect(() => {
-    const loadSound = async () => {
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        staysActiveInBackground: false,
-        playsInSilentModeIOS: true,
-      });
+  const musicUri = "https://github.com/amberhasan/mind-glance/blob/main/assets/music/Ambient__BPM60.mp3?raw=true"; // Change if needed
 
+  const loadSound = async () => {
+    try {
       const { sound: loadedSound } = await Audio.Sound.createAsync(
-        require("../assets/music/Ambient__BPM60.mp3"), // 👈 place music.mp3 in your assets folder
-        { shouldPlay: true, isLooping: true, volume: 1.0 }
+        { uri: musicUri },
+        { shouldPlay: true, isLooping: true }
       );
-
-      sound.current = loadedSound;
+      setSound(loadedSound);
       setIsPlaying(true);
-    };
-
-    loadSound();
-
-    return () => {
-      sound.current?.unloadAsync();
-    };
-  }, []);
-
-  const play = async () => {
-    if (sound.current && !isPlaying) {
-      await sound.current.playAsync();
-      setIsPlaying(true);
-    }
-  };
-
-  const pause = async () => {
-    if (sound.current && isPlaying) {
-      await sound.current.pauseAsync();
-      setIsPlaying(false);
+    } catch (error) {
+      Alert.alert("Error", "Failed to load sound");
     }
   };
 
   const toggle = async () => {
-    if (isPlaying) await pause();
-    else await play();
+    if (!sound) {
+      await loadSound();
+    } else {
+      const status = await sound.getStatusAsync();
+      if (status.isLoaded) {
+        if (status.isPlaying) {
+          await sound.pauseAsync();
+          setIsPlaying(false);
+        } else {
+          await sound.playAsync();
+          setIsPlaying(true);
+        }
+      }
+    }
   };
 
+  useEffect(() => {
+    return () => {
+      if (sound) sound.unloadAsync();
+    };
+  }, [sound]);
+
   return (
-    <MusicContext.Provider value={{ isPlaying, play, pause, toggle }}>
+    <MusicContext.Provider value={{ isPlaying, toggle }}>
       {children}
     </MusicContext.Provider>
   );

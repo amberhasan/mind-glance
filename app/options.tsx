@@ -16,18 +16,23 @@ import { useRouter } from "expo-router";
 const frameOptions = [
   {
     id: "frame1",
-    name: "Gold Frame",
-    image: { uri: "https://via.placeholder.com/100x100.png?text=Gold" },
+    name: "Glacier Frame",
+    image: { uri: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames3.png?raw=true" },
   },
   {
     id: "frame2",
-    name: "Crystal Frame",
-    image: { uri: "https://via.placeholder.com/100x100.png?text=Crystal" },
+    name: "Abstract Flower Frame",
+    image: { uri: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames4.png?raw=true" },
   },
   {
     id: "frame3",
-    name: "Flame Frame",
-    image: { uri: "https://via.placeholder.com/100x100.png?text=Flame" },
+    name: "HackAI Frame",
+    image: { uri: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames6.png?raw=true" },
+  },
+  {
+    id: "frame4",
+    name: "NRVE Frame",
+    image: { uri: "https://github.com/amberhasan/mind-glance/blob/main/assets/images/frames7.png?raw=true" },
   },
 ];
 
@@ -127,20 +132,18 @@ export default function OptionsScreen() {
           <Image source={frame.image} style={styles.image} />
           <Text style={styles.name}>{frame.name}</Text>
 
-          {ownedFrames.includes(frame.id) ? (
-            selectedFrame === frame.id ? (
-              <Text style={styles.status}>✅ Selected</Text>
-            ) : (
-              <Pressable
-                onPress={() => handleSelectFrame(frame.id)}
-                style={styles.buyButton}
-              >
-                <Text style={styles.buyText}>Equip</Text>
-              </Pressable>
-            )
-          ) : (
+          {!purchasedFrames.includes(frame.id) ? (
             <Pressable onPress={buyFrame} style={styles.buyButton}>
               <Text style={styles.buyText}>Buy</Text>
+            </Pressable>
+          ) : selectedFrame === frame.id ? (
+            <Text style={styles.status}>✅ Equipped</Text>
+          ) : (
+            <Pressable
+              onPress={() => handleSelectFrame(frame.id)}
+              style={styles.buyButton}
+            >
+              <Text style={styles.buyText}>Equip</Text>
             </Pressable>
           )}
         </View>

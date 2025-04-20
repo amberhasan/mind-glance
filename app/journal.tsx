@@ -51,8 +51,6 @@ export default function JournalScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <BackButton />
-
         <Text style={styles.title}>Journal 📓</Text>
 
         <TextInput

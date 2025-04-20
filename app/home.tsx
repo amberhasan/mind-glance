@@ -8,20 +8,29 @@ import {
   Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from "../components/CustomButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
-  // XP & Level System
-  const currentXP = 145;
+  const [xp, setXp] = useState(0);
   const xpPerLevel = 100;
-  const level = Math.floor(currentXP / xpPerLevel) + 1;
-  const progress = currentXP % xpPerLevel;
+  const level = Math.floor(xp / xpPerLevel) + 1;
+  const progress = xp % xpPerLevel;
 
-  // Profile Image State
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
-  // Ask permission on mount
+  // Load XP on mount
+  useEffect(() => {
+    (async () => {
+      const storedXP = await AsyncStorage.getItem("xp");
+      if (storedXP) {
+        setXp(parseInt(storedXP));
+      }
+    })();
+  }, []);
+
+  // Request image picker permission
   useEffect(() => {
     (async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -31,7 +40,6 @@ export default function HomeScreen() {
     })();
   }, []);
 
-  // Image picker handler
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -76,7 +84,9 @@ export default function HomeScreen() {
               marginBottom: 4,
             }}
           >
-            <Text style={{ fontSize: 14 }}>Level {level}</Text>
+            <Text style={{ fontSize: 14, fontWeight: "600" }}>
+              Level {level}
+            </Text>
             <Text style={{ fontSize: 14 }}>
               XP: {progress} / {xpPerLevel}
             </Text>

@@ -1,50 +1,51 @@
-# Welcome to your Expo app 👋
+# 🌿 Mind Glance
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> A mobile-first mental wellness app combining journaling, gamified self-care, and mood analytics to help UTD students (and beyond) care for their minds — one glance at a time.
 
-## Get started
+---
 
-1. Install dependencies
+## 🌱 Inspiration
 
-   ```bash
-   npm install
-   ```
+As students, we know college life can be overwhelming. Between classes, deadlines, and daily stressors, mental health often takes a backseat.
 
-2. Start the app
+**Mind Glance** is our attempt to change that.
 
-   ```bash
-    npx expo start
-   ```
+We realized:
+- ✅ **Journaling** builds self-awareness
+- ✅ **To-do lists** give a sense of accomplishment
+- ✅ **Cognitive games** boost alertness and joy
+- ✅ **Personalization** makes it feel yours
 
-In the output, you'll find options to open the app in a
+So we brought all of this into one mobile app — backed by sentiment analysis and designed for daily use.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📲 What It Does
 
-## Get a fresh project
+Mind Glance is your all-in-one mental wellness companion, featuring:
 
-When you're ready, run:
+- 🧠 **Daily Journal** — with automatic mood detection using sentiment analysis
+- 🎮 **Cognitive Games** — including Wordle, Memory, and Sudoku
+- ✅ **To-Do List** — organize your day, check off tasks, and stay focused
+- 📊 **Mood Tracking** — see your trends over time with beautiful charts
+- 🌟 **XP System and Online Currency** — earn XP for self-care activities and level up. Levelling up earns you Mana, our online currency
+- 🛒 **Shop** - made a shop where you can buy frames for your profile picture, hints for the games and different music being played while using the app with Mana, our online currency 
+- 🖼️ **Profile Customization** — frames and themes to make it your own. You can also customize your profile picture to whatever you want. 
+- 🎶 **Background Music** — calming vibes to stay in flow
 
-```bash
-npm run reset-project
-```
+---
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🛠️ How We Built It
 
-## Learn more
+- **React Native + Expo** – for fast mobile development
+- **TypeScript & JavaScript** – clean logic and scalable components
+- **AsyncStorage** – persistent local storage for journal entries, settings, XP, and more
+- **TextBlob via Flask (backend)** – sentiment analysis for journal entries
+- **react-native-chart-kit** – sleek data visualizations for mood & XP
+- **HuggingFace API (future)** – to expand NLP capabilities
+- **Figma** – design and UI planning
+- **Git + GitHub** – version control and teamwork
 
-To learn more about developing your project with Expo, look at the following resources:
+---
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## NOTE: To Login, use the Email: Test@example.com and the Password: 1234 

@@ -1,44 +1,57 @@
+from dotenv import load_dotenv
+import os
+
 from flask import Flask, request, jsonify
-from textblob import TextBlob
-from flask_cors import CORS  # important for mobile apps hitting your local server
+import requests
+from flask_cors import CORS
+
+load_dotenv()
+
+HUGGINGFACE_API_TOKEN = os.getenv('HUGGINGFACE_API_TOKEN')
+
 
 app = Flask(__name__)
-CORS(app)  # Allow requests from React Native
+CORS(app)
 
-@app.route("/analyze/bulk", methods=["POST"])
-def analyze_bulk():
+def analyze_sentiment(text):
+    api_url = "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english"
+    headers = {
+        "Authorization": f"Bearer {HUGGINGFACE_API_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "inputs": text
+    }
+
+    response = requests.post(api_url, headers=headers, json=payload)
+
+    print("Huggingface response status:", response.status_code)
+    print("Huggingface response body:", response.text)
+
+    if response.status_code == 200:
+        result = response.json()
+        label = result[0][0]["label"]
+        score = result[0][0]["score"]
+        return label, score
+    else:
+        return "Error", 0
+
+
+# Route that frontend will hit
+@app.route('/analyze', methods=['POST'])
+def analyze():
     data = request.get_json()
-    entries = data.get("entries", [])
+    journal_text = data.get('text', '')
 
-    if not entries:
-        return jsonify({"error": "No entries provided"}), 400
+    if not journal_text:
+        return jsonify({"error": "No text provided"}), 400
 
-    moods = []
-    confidences = []
-
-    for entry in entries:
-        text = entry.get("text", "")
-        blob = TextBlob(text)
-        polarity = blob.sentiment.polarity
-
-        if polarity > 0.2:
-            moods.append("POSITIVE")
-        elif polarity < -0.2:
-            moods.append("NEGATIVE")
-        else:
-            moods.append("NEUTRAL")
-
-        confidences.append(abs(polarity))
-
-    from collections import Counter
-    mood_counts = Counter(moods)
-    overall_mood = mood_counts.most_common(1)[0][0]
-    avg_confidence = sum(confidences) / len(confidences)
+    label, score = analyze_sentiment(journal_text)
 
     return jsonify({
-        "overallMood": overall_mood,
-        "confidence": avg_confidence
+        "mood": label,
+        "confidence": score
     })
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

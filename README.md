@@ -48,4 +48,6 @@ Mind Glance is your all-in-one mental wellness companion, featuring:
 
 ---
 
-# NOTE: To Login, use the Email: Test@example.com and the Password: 1234 
+##  NOTE: To Login, use the Email: Test@example.com and the Password: 1234 
+
+---
